@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: shopkart
+    runtime: node
+    plan: starter
+    buildCommand: npm ci --omit=dev
+    startCommand: node server.js
+    envVars:
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data/db
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: CALLMEBOT_APIKEY
+        sync: false
+      - key: WHATSAPP_ADMIN_NUMBER
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+    disk:
+      name: shop-data
+      mountPath: /var/data
+      sizeGB: 1

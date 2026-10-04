@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Track Order</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="topbar"><div class="wrap topbar-inner"><a href="/" class="logo"><span class="logo-mark">🛍️</span><span id="storeName">Shop</span></a></div></header>
+  <main class="wrap track" id="track"><p class="empty">Loading order…</p></main>
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const steps = ['pending', 'confirmed', 'shipped', 'delivered'];
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    Promise.all([fetch('/api/store').then((r) => r.json()), fetch(`/api/orders/${encodeURIComponent(qs.get('id'))}?token=${encodeURIComponent(qs.get('token'))}`).then((r) => r.json())]).then(([store, data]) => {
+      const s = store.settings;
+      document.getElementById('storeName').textContent = s.storeName;
+      document.title = `Track Order · ${s.storeName}`;
+      document.documentElement.style.setProperty('--primary', s.primaryColor);
+      const el = document.getElementById('track');
+      if (!data.order) return (el.innerHTML = '<p class="empty">Order not found. Please check your link.</p>');
+      const o = data.order;
+      const m = (n) => s.currency + Number(n).toLocaleString('en-IN');
+      const idx = steps.indexOf(o.status);
+      el.innerHTML = `
+        <h1>Order #${o.number}</h1>
+        <p class="muted">Placed on ${new Date(o.createdAt).toLocaleString('en-IN')}</p>
+        ${o.status === 'cancelled' ? '<div class="pill pill-red">Cancelled</div>' : `
+        <ol class="steps">${steps.map((st, i) => `<li class="${i <= idx ? 'done' : ''}"><span>${i + 1}</span>${st[0].toUpperCase() + st.slice(1)}</li>`).join('')}</ol>`}
+        <div class="card">
+          ${o.items.map((i) => `<div class="line"><img src="${esc(i.image)}" alt=""><div><b>${esc(i.name)}</b><small>${i.qty} × ${m(i.price)}</small></div><b>${m(i.qty * i.price)}</b></div>`).join('')}
+          <div class="sumrow"><span>Subtotal</span><span>${m(o.subtotal)}</span></div>
+          <div class="sumrow"><span>Delivery</span><span>${o.deliveryFee ? m(o.deliveryFee) : 'FREE'}</span></div>
+          <div class="sumrow total"><span>Total</span><span>${m(o.total)}</span></div>
+        </div>
+        <div class="card"><b>Payment</b><p>${esc(o.payment.method.toUpperCase())} · <span class="pill pill-${o.payment.status === 'paid' ? 'green' : o.payment.status === 'pending' ? 'amber' : 'red'}">${esc(o.payment.status)}</span></p>
+        <b>Delivering to</b><p>${esc(o.customer.name)}, ${esc(o.customer.address)}, ${esc(o.customer.city)} - ${esc(o.customer.pincode)}<br>${esc(o.customer.phone)}</p></div>
+        ${data.whatsappLink ? `<a class="btn btn-wa" target="_blank" rel="noopener" href="${data.whatsappLink}">Chat about this order on WhatsApp</a>` : ''}
+        <a class="btn btn-ghost" href="/">← Back to shop</a>`;
+    });
+  </script>
+</body>
+</html>

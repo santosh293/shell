@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="announce" id="announce" hidden></div>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="/" class="logo"><span class="logo-mark">🛍️</span><span id="storeName">Shop</span></a>
+      <div class="search">
+        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M10 2a8 8 0 0 1 6.32 12.9l5.39 5.4-1.42 1.4-5.39-5.38A8 8 0 1 1 10 2Zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></svg>
+        <input id="search" type="search" placeholder="Search products…" autocomplete="off" />
+      </div>
+      <button class="cart-btn" id="openCart" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M7 18a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm10 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM1 2h3.3l.94 2H21a1 1 0 0 1 .9 1.45l-3.58 7A2 2 0 0 1 16.55 13H8.1l-.9 1.63-.03.12a.25.25 0 0 0 .25.25H19v2H7.42a2.25 2.25 0 0 1-1.98-3.32L6.8 11.2 3.04 4H1V2Z"/></svg>
+        <span class="badge" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <p class="eyebrow" id="tagline"></p>
+        <h1 id="heroTitle"></h1>
+        <p class="hero-sub" id="heroSubtitle"></p>
+        <a href="#shop" class="btn btn-light">Shop now →</a>
+      </div>
+      <div class="hero-art" id="heroArt"></div>
+    </div>
+  </section>
+
+  <main class="wrap" id="shop">
+    <div class="chips" id="categories"></div>
+    <div class="toolbar">
+      <h2 id="listTitle">All products</h2>
+      <select id="sort">
+        <option value="featured">Featured</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+        <option value="new">Newest</option>
+      </select>
+    </div>
+    <div class="grid" id="products"></div>
+    <p class="empty" id="noResults" hidden>No products match your search.</p>
+  </main>
+
+  <section class="features wrap">
+    <div><span>🚚</span><b>Fast delivery</b><small>Across the city</small></div>
+    <div><span>💳</span><b>Secure payments</b><small>UPI · Cards · COD</small></div>
+    <div><span>💬</span><b>WhatsApp support</b><small>Order updates on chat</small></div>
+    <div><span>↩️</span><b>Easy returns</b><small>7-day return policy</small></div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div><b id="footName"></b><p id="footAddress"></p></div>
+      <div id="footContact"></div>
+    </div>
+  </footer>
+
+  <a class="wa-float" id="waFloat" target="_blank" rel="noopener" hidden aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.6c-2 0-3.9-.5-5.5-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6Zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.4 3.7 5.9 5.2 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.5-.4Z"/></svg>
+  </a>
+
+  <!-- Product modal -->
+  <div class="overlay" id="productModal" hidden>
+    <div class="modal modal-lg">
+      <button class="close" data-close>&times;</button>
+      <div class="pdp" id="pdp"></div>
+    </div>
+  </div>
+
+  <!-- Cart drawer -->
+  <div class="overlay" id="cartDrawer" hidden>
+    <aside class="drawer">
+      <div class="drawer-head"><h3>Your cart</h3><button class="close" data-close>&times;</button></div>
+      <div class="drawer-body" id="cartItems"></div>
+      <div class="drawer-foot" id="cartFoot"></div>
+    </aside>
+  </div>
+
+  <!-- Checkout -->
+  <div class="overlay" id="checkoutModal" hidden>
+    <div class="modal modal-lg">
+      <button class="close" data-close>&times;</button>
+      <h3>Checkout</h3>
+      <form id="checkoutForm" class="checkout">
+        <div class="form-col">
+          <h4>Delivery details</h4>
+          <label>Full name<input name="name" required maxlength="80" /></label>
+          <div class="row2">
+            <label>Mobile (WhatsApp)<input name="phone" required inputmode="tel" pattern="[0-9+\s-]{10,15}" placeholder="10-digit mobile" /></label>
+            <label>Email <small>(optional)</small><input name="email" type="email" /></label>
+          </div>
+          <label>Address<textarea name="address" required rows="2" maxlength="300" placeholder="House no, street, area, landmark"></textarea></label>
+          <div class="row2">
+            <label>City<input name="city" required maxlength="80" /></label>
+            <label>Pincode<input name="pincode" required inputmode="numeric" pattern="[0-9]{4,8}" /></label>
+          </div>
+          <label>Order note <small>(optional)</small><input name="note" maxlength="300" /></label>
+        </div>
+        <div class="form-col">
+          <h4>Payment</h4>
+          <div class="pay-options" id="payOptions"></div>
+          <div class="upi-box" id="upiBox" hidden>
+            <p>Scan & pay <b id="upiAmount"></b> to <b id="upiIdText"></b></p>
+            <div id="upiQr" class="qr"></div>
+            <a class="btn btn-outline btn-sm only-mobile" id="upiAppLink">Open UPI app</a>
+            <label>UPI transaction ID / UTR<input name="paymentReference" id="upiRef" maxlength="60" placeholder="12-digit UTR after payment" /></label>
+          </div>
+          <div class="summary" id="checkoutSummary"></div>
+          <p class="error" id="checkoutError" hidden></p>
+          <button class="btn btn-primary btn-block" id="placeOrder" type="submit">Place order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="overlay" id="successModal" hidden>
+    <div class="modal success">
+      <div class="tick">✓</div>
+      <h3>Order placed!</h3>
+      <p id="successText"></p>
+      <a class="btn btn-wa btn-block" id="successWa" target="_blank" rel="noopener" hidden>Send order on WhatsApp</a>
+      <a class="btn btn-outline btn-block" id="successTrack">Track your order</a>
+      <button class="btn btn-ghost btn-block" data-close>Continue shopping</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/shop.js"></script>
+</body>
+</html>

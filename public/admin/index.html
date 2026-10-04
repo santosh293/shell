@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Store Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/admin/admin.css" />
+</head>
+<body>
+  <!-- Login -->
+  <div class="login" id="loginView" hidden>
+    <form class="login-card" id="loginForm">
+      <div class="logo-mark big">🛍️</div>
+      <h2>Admin login</h2>
+      <p class="muted">Manage products, orders and payments</p>
+      <label>Username<input name="username" required autocomplete="username" /></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password" /></label>
+      <p class="error" id="loginError" hidden></p>
+      <button class="btn btn-primary btn-block">Sign in</button>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div class="admin" id="appView" hidden>
+    <aside class="side" id="side">
+      <div class="side-brand"><span class="logo-mark">🛍️</span><b id="brand">Admin</b></div>
+      <nav>
+        <a data-tab="dashboard" class="active">📊 <span>Dashboard</span></a>
+        <a data-tab="orders">🧾 <span>Orders</span> <em class="nav-badge" id="pendingBadge" hidden></em></a>
+        <a data-tab="payments">💳 <span>Payments</span></a>
+        <a data-tab="products">📦 <span>Products</span></a>
+        <a data-tab="settings">⚙️ <span>Store settings</span></a>
+      </nav>
+      <div class="side-foot">
+        <a href="/" target="_blank" class="btn btn-outline btn-sm btn-block">View store ↗</a>
+        <button class="btn btn-ghost btn-sm btn-block" id="logout">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="main-head">
+        <button class="icon-btn only-mobile" id="menuBtn">☰</button>
+        <h1 id="pageTitle">Dashboard</h1>
+        <span class="live" title="Live updates"><i></i> Live</span>
+      </header>
+
+      <!-- Dashboard -->
+      <section data-page="dashboard">
+        <div class="kpis" id="kpis"></div>
+        <div class="two">
+          <div class="panel"><h3>Last 7 days</h3><div class="chart" id="chart"></div></div>
+          <div class="panel"><h3>Low stock</h3><div id="lowStock"></div></div>
+        </div>
+        <div class="panel"><div class="panel-head"><h3>Recent orders</h3><a class="link" data-goto="orders">View all →</a></div><div id="recentOrders"></div></div>
+      </section>
+
+      <!-- Orders -->
+      <section data-page="orders" hidden>
+        <div class="filters">
+          <input type="search" id="orderSearch" placeholder="Search order #, name, phone, city" />
+          <select id="orderStatus"><option value="">All statuses</option><option>pending</option><option>confirmed</option><option>shipped</option><option>delivered</option><option>cancelled</option></select>
+          <select id="orderPayment"><option value="">All payments</option><option>pending</option><option>paid</option><option>failed</option><option>refunded</option></select>
+          <select id="orderRange"><option value="">All time</option><option value="today">Today</option></select>
+          <div class="spacer"></div>
+          <button class="btn btn-wa btn-sm" id="waList">💬 Send list on WhatsApp</button>
+          <a class="btn btn-outline btn-sm" id="csvLink">⬇ CSV</a>
+        </div>
+        <div class="panel table-wrap"><table class="table" id="ordersTable"></table></div>
+      </section>
+
+      <!-- Payments -->
+      <section data-page="payments" hidden>
+        <div class="kpis" id="payKpis"></div>
+        <div class="panel table-wrap"><table class="table" id="paymentsTable"></table></div>
+      </section>
+
+      <!-- Products -->
+      <section data-page="products" hidden>
+        <div class="filters">
+          <input type="search" id="productSearch" placeholder="Search products" />
+          <div class="spacer"></div>
+          <button class="btn btn-primary btn-sm" id="addProduct">+ Add product</button>
+        </div>
+        <div class="panel table-wrap"><table class="table" id="productsTable"></table></div>
+      </section>
+
+      <!-- Settings -->
+      <section data-page="settings" hidden>
+        <form id="settingsForm" class="settings">
+          <div class="panel">
+            <h3>Store details</h3>
+            <div class="grid2">
+              <label>Store name<input name="storeName" /></label>
+              <label>Tagline<input name="tagline" /></label>
+              <label>Hero title<input name="heroTitle" /></label>
+              <label>Hero subtitle<input name="heroSubtitle" /></label>
+              <label>Announcement bar<input name="announcement" /></label>
+              <label>Brand colour<input name="primaryColor" type="color" /></label>
+              <label>Contact email<input name="contactEmail" type="email" /></label>
+              <label>Address<input name="address" /></label>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>WhatsApp</h3>
+            <label>WhatsApp number (with country code, e.g. 919876543210)<input name="whatsappNumber" inputmode="tel" placeholder="919876543210" /></label>
+            <p class="muted small" id="waStatus"></p>
+          </div>
+          <div class="panel">
+            <h3>Delivery & payments</h3>
+            <div class="grid2">
+              <label>Currency symbol<input name="currency" maxlength="4" /></label>
+              <label>Delivery fee<input name="deliveryFee" type="number" min="0" /></label>
+              <label>Free delivery above (0 = never)<input name="freeDeliveryAbove" type="number" min="0" /></label>
+              <span></span>
+              <label>UPI ID<input name="upiId" placeholder="yourname@upi" /></label>
+              <label>UPI payee name<input name="upiName" /></label>
+            </div>
+            <label class="check"><input type="checkbox" name="codEnabled" /> Accept Cash on Delivery</label>
+            <label class="check"><input type="checkbox" name="upiEnabled" /> Accept UPI (QR) payments</label>
+            <p class="muted small" id="rzpStatus"></p>
+          </div>
+          <div class="panel">
+            <h3>Categories</h3>
+            <div class="tags" id="catTags"></div>
+            <div class="inline"><input id="newCat" placeholder="New category" /><button type="button" class="btn btn-outline btn-sm" id="addCat">Add</button></div>
+          </div>
+          <div class="sticky-save"><button class="btn btn-primary">Save settings</button></div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Product editor -->
+  <div class="overlay" id="productModal" hidden>
+    <div class="modal modal-lg">
+      <button class="close" data-close>&times;</button>
+      <h3 id="productModalTitle">Add product</h3>
+      <form id="productForm" class="product-form">
+        <div class="img-pick">
+          <img id="imgPreview" alt="" />
+          <label class="btn btn-outline btn-sm">Upload image<input type="file" accept="image/*" id="imgFile" hidden /></label>
+          <input name="image" placeholder="…or paste image URL" />
+        </div>
+        <div>
+          <label>Product name<input name="name" required /></label>
+          <div class="grid2">
+            <label>Category<input name="category" list="catList" required /></label>
+            <label>Stock<input name="stock" type="number" min="0" required /></label>
+            <label>Selling price<input name="price" type="number" min="0" step="0.01" required /></label>
+            <label>MRP (strike-through)<input name="mrp" type="number" min="0" step="0.01" /></label>
+          </div>
+          <datalist id="catList"></datalist>
+          <label>Description<textarea name="description" rows="4"></textarea></label>
+          <label class="check"><input type="checkbox" name="featured" /> Featured (shown first & in hero)</label>
+          <label class="check"><input type="checkbox" name="active" checked /> Visible in store</label>
+          <p class="error" id="productError" hidden></p>
+          <button class="btn btn-primary btn-block">Save product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order detail -->
+  <div class="overlay" id="orderModal" hidden>
+    <div class="modal modal-lg"><button class="close" data-close>&times;</button><div id="orderDetail"></div></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>
